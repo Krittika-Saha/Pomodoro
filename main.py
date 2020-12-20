@@ -6,27 +6,67 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_MIN = 25
-SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 20
+WORK_SEC = 25*60
+SHORT_BREAK_SEC = 300
+LONG_BREAK_SEC = 1200
+CURRENT_TIME = 0
+reps = 1
+do_continue = True
+count_min = 0
+count_sec = 0
+# ---------------------------- START AND STOP MECHANISM ------------------ #
+def start_timer():
+  global do_continue
+  do_continue = True
+  start_command()
+def stop_timer():
+  global do_continue
+  do_continue = False
 
 # ---------------------------- TIMER RESET ------------------------------- # 
 
-# ---------------------------- TIMER MECHANISM ------------------------------- # 
+# ---------------------------- TIMER MECHANISM --------------------------- # 
 def start_command():
-  count_down(62)
+  global reps
 
-
+  if do_continue:
+    if CURRENT_TIME != 0:
+      count_down(CURRENT_TIME)
+    else:
+      if reps % 2 != 0:
+        timer.configure(text='Work', fg=RED)
+        count_down(WORK_SEC)
+        reps += 1
+      elif reps % 2 == 0 and reps % 8 != 0:
+        timer.configure(text='Short Break', fg=PINK)
+        count_down(SHORT_BREAK_SEC)
+        reps += 1
+      elif reps % 8 == 0:
+        timer.configure(text='Long Break', fg=GREEN)
+        count_down(LONG_BREAK_SEC)
+        reps += 1
+  elif do_continue == False:
+    reps -= 1
+  
+  
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 def count_down(count):
+  global reps
+  if do_continue:
+    count_min = count // 60
+    count_sec = count % 60 
+    if count_sec < 10 and count_sec >= 0:
+      count_sec = f'0{count_sec}'
+    canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
+    if count > 0:
+      CURRENT_TIME = count-1
+      window.after(1000, count_down, count - 1) 
+    else:
+      start_timer()
+    
+  elif do_continue == False:
+    reps -= 1
 
-  count_min = count // 60
-  count_sec = count % 60 
-  if count_sec < 10 and count_sec >= 0:
-    count_sec = f'0{count_sec}'
-  canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
-  if count > 0:
-    window.after(1000, count_down, count - 1) 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title('Pomodoro')
@@ -46,9 +86,12 @@ canvas.grid(column=1, row=1)
 #Buttons
 
 start = Button(text='Start', highlightthickness=0)
-start.config(command=start_command)
+start.config(command=start_timer)
 start.grid(column=0, row=2)
 
+stop = Button(text='Stop', highlightthickness=0)
+stop.config(command=stop_timer)
+stop.grid(column=1, row=4)
 reset = Button(text='Reset', highlightthickness=0)
 reset.grid(column=2, row=2)
 
