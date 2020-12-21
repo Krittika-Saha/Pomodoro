@@ -9,11 +9,10 @@ FONT_NAME = "Courier"
 WORK_SEC = 25*60
 SHORT_BREAK_SEC = 300
 LONG_BREAK_SEC = 1200
-current_time = 0
+CURRENT_TIME = 0
 reps = 1
 do_continue = True
-count_min = 0
-count_sec = 0
+timer2 = None
 # ---------------------------- START AND STOP MECHANISM ------------------ #
 def start_timer():
   global do_continue
@@ -24,14 +23,18 @@ def stop_timer():
   do_continue = False
 
 # ---------------------------- TIMER RESET ------------------------------- # 
-
+def reset_timer():
+  window.after_cancel(timer2)
+  canvas.itemconfig(timer_text, text="00:00")
+  timer.config(text="Timer", fg=GREEN)
+  check_marks.config(text="")
 # ---------------------------- TIMER MECHANISM --------------------------- # 
 def start_command():
   global reps
 
   if do_continue:
-    if current_time != 0:
-      count_down(current_time)
+    if CURRENT_TIME != 0:
+      count_down(CURRENT_TIME)
     else:
       if reps % 2 != 0:
         timer.configure(text='Work', fg=RED)
@@ -51,8 +54,7 @@ def start_command():
   
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 def count_down(count):
-  global reps
-  current_time = count-1
+  global reps, CURRENT_TIME, timer2
   if do_continue:
     count_min = count // 60
     count_sec = count % 60 
@@ -60,13 +62,18 @@ def count_down(count):
       count_sec = f'0{count_sec}'
     canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
     if count > 0:
-      window.after(1000, count_down, count - 1) 
+      CURRENT_TIME = count-1
+      timer2 = window.after(1000, count_down, count - 1) 
     else:
-      start_command()
-  
+      start_timer()
+      marks = ""
+      for i in range(reps//2):
+        marks += "✔"
+      check_marks.config(text=marks)
+    
   elif do_continue == False:
     reps -= 1
-  
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title('Pomodoro')
@@ -85,14 +92,13 @@ timer_text = canvas.create_text(140, 130, text='00:00', fill='white', font=(FONT
 canvas.grid(column=1, row=1)
 #Buttons
 
-start = Button(text='Start', highlightthickness=0)
-start.config(command=start_timer)
+start = Button(text='Start', highlightthickness=0, command=start_timer)
 start.grid(column=0, row=2)
 
-stop = Button(text='Stop', highlightthickness=0)
-stop.config(command=stop_timer)
+stop = Button(text='Stop', highlightthickness=0, command=stop_timer)
 stop.grid(column=1, row=4)
-reset = Button(text='Reset', highlightthickness=0)
+
+reset = Button(text='Reset', highlightthickness=0, command=reset_timer)
 reset.grid(column=2, row=2)
 
 #Checkmarks
