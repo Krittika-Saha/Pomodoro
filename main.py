@@ -6,10 +6,10 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_SEC = 25*60
+WORK_SEC = 1500
 SHORT_BREAK_SEC = 300
 LONG_BREAK_SEC = 1200
-CURRENT_TIME = 0
+current_time = 0
 reps = 1
 do_continue = True
 timer2 = None
@@ -33,8 +33,8 @@ def start_command():
   global reps
 
   if do_continue:
-    if CURRENT_TIME != 0:
-      count_down(CURRENT_TIME)
+    if current_time != 0:
+      count_down(current_time)
     else:
       if reps % 2 != 0:
         timer.configure(text='Work', fg=RED)
@@ -54,7 +54,7 @@ def start_command():
   
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 def count_down(count):
-  global reps, CURRENT_TIME, timer2
+  global reps, current_time, timer2
   if do_continue:
     count_min = count // 60
     count_sec = count % 60 
@@ -62,7 +62,7 @@ def count_down(count):
       count_sec = f'0{count_sec}'
     canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
     if count > 0:
-      CURRENT_TIME = count-1
+      current_time = count-1
       timer2 = window.after(1000, count_down, count - 1) 
     else:
       start_timer()
@@ -103,7 +103,7 @@ reset.grid(column=2, row=2)
 
 #Checkmarks
 
-check_marks = Label(text='✔', fg=GREEN, bg=YELLOW)
+check_marks = Label(text='', fg=GREEN, bg=YELLOW)
 check_marks.grid(column=1, row=3)
 
 window.mainloop()
