@@ -1,4 +1,5 @@
 from tkinter import *
+from playsound import playsound
 
 # ---------------------------- CONSTANTS ------------------------------- #
 PINK = "#e2979c"
@@ -6,7 +7,7 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_SEC = 1500
+WORK_SEC = 1
 SHORT_BREAK_SEC = 300
 LONG_BREAK_SEC = 1200
 current_time = 0
@@ -48,7 +49,7 @@ def start_command():
         timer.configure(text='Long Break', fg=GREEN)
         count_down(LONG_BREAK_SEC)
         reps += 1
-  elif do_continue == False:
+  else:
     reps -= 1
   
   
@@ -65,6 +66,7 @@ def count_down(count):
       current_time = count-1
       timer2 = window.after(1000, count_down, count - 1) 
     else:
+      playsound('Alarm.mp3')
       start_timer()
       marks = ""
       for i in range(reps//2):
