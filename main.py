@@ -7,7 +7,7 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_SEC = 1
+WORK_SEC = 1500
 SHORT_BREAK_SEC = 300
 LONG_BREAK_SEC = 1200
 current_time = 0
@@ -39,16 +39,19 @@ def start_command():
     else:
       if reps % 2 != 0:
         timer.configure(text='Work', fg=RED)
-        count_down(WORK_SEC)
         reps += 1
+        count_down(WORK_SEC)
+
       elif reps % 2 == 0 and reps % 8 != 0:
         timer.configure(text='Short Break', fg=PINK)
-        count_down(SHORT_BREAK_SEC)
         reps += 1
+        count_down(SHORT_BREAK_SEC)
+
       elif reps % 8 == 0:
         timer.configure(text='Long Break', fg=GREEN)
-        count_down(LONG_BREAK_SEC)
         reps += 1
+        count_down(LONG_BREAK_SEC)
+
   else:
     reps -= 1
   
